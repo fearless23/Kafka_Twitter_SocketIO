@@ -1,0 +1,140 @@
+*,
+*::after,
+*::before {
+  box-sizing: border-box;
+}
+
+body,
+html {
+  margin: 0;
+  padding: 0;
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
+}
+
+body {
+  min-height: 100vh;
+  background-image: linear-gradient(120deg, #f6d365 0%, #fda085 100%);
+}
+
+:root {
+  --primary: #2a98ef;
+  --formHeight: 48px;
+}
+
+.searchBar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5em;
+}
+
+.searchBar input {
+  height: var(--formHeight);
+  flex-grow: 4;
+  border: 0;
+  outline: 0;
+  padding: 0 20px;
+  font-size: 20px;
+}
+
+.searchBar button {
+  flex-grow: 1;
+  height: var(--formHeight);
+  border: 0;
+  outline: 0;
+  background: var(--primary);
+  color: white;
+  cursor: pointer;
+  opacity: 0.9;
+}
+
+.searchBar button:hover {
+  opacity: 1;
+}
+
+
+
+.tweets {
+  display: flex;
+  flex-direction: column;
+ }
+ 
+ .tweet {
+  align-self: center;
+  width: 400px;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background: white;
+ }
+ 
+ .tweet .top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+ }
+ 
+ .top-left {
+  display: flex;
+  align-items: center;
+ }
+ 
+ .top-left img {
+  border-radius: 1000px;
+ }
+ 
+ .names {
+  margin-left: 1rem;
+ }
+ 
+ .name {
+  font-weight: bold;
+ }
+ 
+ .username {
+  color: rgba(0, 0, 0, 0.85);
+ }
+ 
+ .date,
+ .time {
+  text-align: right;
+  line-height: 1.42;
+ }
+ 
+ .time {
+  font-size: 0.9rem;
+  color: rgba(0, 0, 0, 0.6);
+ }
+ 
+ .content {
+  padding: 1rem 0;
+ }
+ 
+ .footer {
+  display: flex;
+  align-items: center;
+ }
+
+ .retweets, .favorites {
+   display: flex;
+   align-items: center;
+ }
+
+ .retweets .fa-retweet {
+   color: #2a98ef;
+   font-size: 1.3em;
+   margin-right: 4px;
+ }
+
+ .favorites {
+   margin-left: 1.3rem;
+ }
+
+ .favorites .fa-heart {
+  color: hotpink;
+  font-size: 1.3em;
+  margin-right: 4px;
+}
+ 

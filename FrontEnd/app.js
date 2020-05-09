@@ -1,4 +1,13 @@
-const socket = io('http://localhost:3000');
+const urls = {
+  local: 'http://localhost:3000',
+  cloud: 'https://kafka-twitter-socket.herokuapp.com/',
+};
+
+// const url = urls.local;
+const url = urls.cloud;
+
+const socket = io(url); 
+
 const inputEl = document.getElementById('hashtag');
 const hashtagBtn = document.getElementById('hashtagBtn');
 const msg = document.getElementById('msg');

@@ -6,7 +6,7 @@ const kaftwEvt = getKafkaTwitterEvent();
 
 // HEROKU WILL LOAD THEIR PORT AUTOMATICALLY in ENV
 const port = process.env.PORT || 3000;
-
+console.log("----------------PORT", port, "------------")
 const server = io.listen(port, { cookie: false });
 
 server.sockets.on('connection', (socket) => {

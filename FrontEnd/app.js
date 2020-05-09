@@ -1,7 +1,7 @@
 const urls = {
   local: 'http://localhost:3000',
   cloud: 'https://kafka-twitter-socket.herokuapp.com/',
-  cloud2: '139.59.74.127:3000',
+  cloud2: 'http://139.59.74.127:3000',
 };
 
 // const url = urls.local;

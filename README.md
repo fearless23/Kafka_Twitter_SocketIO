@@ -29,7 +29,7 @@ Project structure
   - `twit` npm package for twitter live streaming api,
   - `rxjs` for easing working with kafka streams, only used subject
 
-  > Deployed on Heroku with git push. Could be deployed with docker with kafka and zookeeper. But cloud kafka on Digital Ocean is temporarily.
+  > Deployed on Heroku with git push (add feature affinity for sticky session socket.io). Could be deployed with docker with kafka and zookeeper. But cloud kafka on Digital Ocean is temporarily.
 
 - **`env`**: Locallu, i used `dotenv npm` package to use .env file. Then, added those variables on heroku. Look for .env.sample file to know which variables are required.
 

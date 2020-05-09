@@ -1,4 +1,10 @@
 const Kafka = require('node-rdkafka');
+const { getKafkaConfig, getKafkaEvents } = require('../configs');
+const { conf } = getKafkaConfig();
+const EVENTS = getKafkaEvents('producer');
+
+const c = { ...conf };
+c['group.id'] = 'kafka-producer';
 
 const ErrorCode = Kafka.CODES.ERRORS;
 const FLUSH_TIMEOUT = 10000; // ms
@@ -54,7 +60,7 @@ class KafkaBasicProducer {
     return true;
   }
 
-  async sendMsg(topic, partition = null, message, key = 'StormyWind', timestamp = Date.now()) {
+  async sendMsg(topic, message, partition = null, key = 'StormyWind', timestamp = Date.now()) {
     return new Promise((resolve, reject) => {
       if (this.dying || this.dead) {
         reject(new ConnectionDeadError('Connection has been dead or is dying'));
@@ -62,7 +68,7 @@ class KafkaBasicProducer {
       try {
         // synchronously
         this.client.produce(topic, partition, Buffer.from(message), key, timestamp);
-        resolve('MSG SEND');
+        resolve('MSG SEND TO KAFKA');
       } catch (err) {
         if (err.code === ErrorCode.ERR__QUEUE_FULL) {
           // flush all queued messages
@@ -75,3 +81,11 @@ class KafkaBasicProducer {
     });
   }
 }
+
+const createProducer = async () => {
+  const xx = new KafkaBasicProducer(c);
+  await xx.connect();
+  return xx;
+};
+
+module.exports = { createProducer };

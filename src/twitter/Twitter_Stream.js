@@ -1,5 +1,7 @@
+const Twit = require('twit');
+const { twitterConfig } = require('../configs');
+const Twitter = new Twit(twitterConfig);
 const { Subject } = require('rxjs');
-const { Twitter } = require('./config');
 
 const extractTweetData = (tweet) => {
   const { id_str, text, retweet_count, favorite_count, created_at, timestamp_ms } = tweet;
@@ -58,17 +60,9 @@ class TwitterStream {
     this.stream.stop();
   }
 }
-let currStream = null;
 
-const runTwiiter = function (socket, hashtag, addToQueue) {
-  if (currStream) currStream.stop();
-  currStream = new TwitterStream(hashtag);
-
-  console.log('STREAM STARTING ==>', hashtag);
-  currStream.getTweet().subscribe((tweet) => {
-    console.log('GOT NEW TWEET');
-    socket.emit('tweet', { err: false, tweet });
-  });
+const createStream = (hashtag) => {
+  return new TwitterStream(hashtag);
 };
 
-module.exports = { runTwiiter };
+module.exports = { createStream };

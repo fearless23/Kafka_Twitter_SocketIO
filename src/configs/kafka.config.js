@@ -1,8 +1,3 @@
-const brokers = {
-  cloud: process.env.CLOUDKARAFKA_BROKERS.split(','),
-  local: process.env.LOCAL_BROKERS.split(','),
-};
-
 const clientEvents = {
   disconnected: 'disconnected',
   ready: 'ready',
@@ -25,12 +20,17 @@ const consumerEvents = {
   ...clientEvents,
 };
 
+const brokers = {
+  cloud: process.env.CLOUDKARAFKA_BROKERS.split(','),
+  local: process.env.LOCAL_BROKERS.split(','),
+};
+
 const securityProtocols = ['plaintext', 'ssl', 'sasl_plaintext', 'sasl_ssl'];
 const mechanisms = ['GSSAPI', 'PLAIN', 'SCRAM-SHA-256'];
 
 const kafkaConfigs = {
   cloud: {
-    'group.id': 'cloudkarafka-cloud',
+    // 'group.id': 'cloudkarafka-cloud',
     'metadata.broker.list': brokers.cloud,
     // 'socket.keepalive.enable': true,
     // 'security.protocol': securityProtocols[0],
@@ -42,17 +42,15 @@ const kafkaConfigs = {
   },
 
   local: {
-    'group.id': 'cloudkarafka-local',
     'metadata.broker.list': brokers.local,
-    'socket.keepalive.enable': true,
-    debug: 'generic,broker,security',
+    // 'socket.keepalive.enable': true,
+    // debug: 'generic,broker,security',
   },
 };
 
-const topicPrefix = process.env.CLOUDKARAFKA_TOPIC_PREFIX;
-const topics = {
-  cloud: `${topicPrefix}test`,
-  local: 'test',
+const topicsPrefixes = {
+  cloud: process.env.CLOUDKARAFKA_TOPIC_PREFIX,
+  local: '',
 };
 
 const events = {
@@ -61,7 +59,7 @@ const events = {
   consumer: consumerEvents,
 };
 
-const getEvents = (type) => {
+const getKafkaEvents = (type) => {
   switch (type) {
     case 'consumer':
       return events.consumer;
@@ -75,11 +73,11 @@ const getEvents = (type) => {
   }
 };
 
-const getConfigs = () => {
+const getKafkaConfig = () => {
   const env = process.env.CONFIG_ENV.toLowerCase() || 'local';
   if (env !== 'local' && env !== 'cloud') throw new Error('Wrong ENV');
   const conf = kafkaConfigs[env];
-  return { conf, topic: topics[env] };
+  return { conf, topicPrefix: topicsPrefixes[env] };
 };
 
-module.exports = { getConfigs, getEvents };
+module.exports = { getKafkaConfig, getKafkaEvents };

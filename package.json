@@ -1,14 +1,12 @@
 {
-  "name": "30_docker_kafka",
+  "name": "kafka-twitter-streaming",
   "version": "1.0.0",
   "description": "",
   "main": "src/main.js",
   "scripts": {
-    "start": "node -r dotenv/config src/twitter/twitter.js",
+    "start": "node -r dotenv/config src/server/server.js",
     "start:consumer": "node -r dotenv/config src/kafka/consumer.js",
-    "start:producer": "node -r dotenv/config src/kafka/producer.js",
-    "start:admin": "node -r dotenv/config src/kafka/admin.js",
-    "start:twitter": "node -r dotenv/config src/twitter/server.js"
+    "start:admin": "node -r dotenv/config src/kafka/admin.js"
   },
   "author": "Jaspreet Singh",
   "license": "MIT",

@@ -1,9 +1,9 @@
 const Kafka = require('node-rdkafka');
-const { getConfigs } = require('./kafkaConfig');
-const { conf } = getConfigs();
+const { getKafkaConfig } = require('../configs');
+const { conf } = getKafkaConfig();
 
 const c = { ...conf };
-c['group.id'] = 'kafka-admin';
+c['client.id'] = 'kafka-admin';
 const adminClient = Kafka.AdminClient.create(c);
 
 adminClient.createTopic({

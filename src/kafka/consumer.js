@@ -1,11 +1,22 @@
 const Kafka = require('node-rdkafka');
-const { getConfigs, getEvents } = require('./kafkaConfig');
-const { conf, topic } = getConfigs();
-const EVENTS = getEvents('consumer');
+const { getKafkaConfig, getKafkaEvents } = require('../configs');
+const { conf } = getKafkaConfig();
+const EVENTS = getKafkaEvents('consumer');
 
 const c = { ...conf };
 c['group.id'] = 'kafka-consumer';
-const consumer = new Kafka.KafkaConsumer(c, {});
+const consumer = new Kafka.KafkaConsumer({
+  ...c,
+  offset_commit_cb: function (err, topicPartitions) {
+    if (err) {
+      // There was an error committing
+      console.error(err);
+    } else {
+      // Commit went through. Let's log the topic partitions
+      console.log(topicPartitions);
+    }
+  },
+});
 
 console.log('BROKERS:', c['metadata.broker.list']);
 console.log('CONSUMER CONNECTING');
@@ -17,9 +28,9 @@ consumer.on(EVENTS.ready, (info, metadata) => {
   // console.log(metadata);
   console.log(`TOPIC: ${topic}`);
   consumer.subscribe([topic]);
-  setInterval(() => {
-    consumer.consume(10);
-  }, 1000);
+  consumer.consume();
+  // setInterval(() => {
+  // }, 1000);
 });
 
 consumer.on(EVENTS.data, (data) => {

@@ -21,7 +21,8 @@ const consumerEvents = {
 };
 
 const brokers = {
-  cloud: process.env.CLOUDKARAFKA_BROKERS.split(','),
+  // cloud: process.env.CLOUDKARAFKA_BROKERS.split(','),
+  cloud: process.env.CLOUD_BROKERS.split(','),
   local: process.env.LOCAL_BROKERS.split(','),
 };
 
@@ -29,7 +30,7 @@ const securityProtocols = ['plaintext', 'ssl', 'sasl_plaintext', 'sasl_ssl'];
 const mechanisms = ['GSSAPI', 'PLAIN', 'SCRAM-SHA-256'];
 
 const kafkaConfigs = {
-  cloud: {
+  cloud_old: {
     // 'group.id': 'cloudkarafka-cloud',
     'metadata.broker.list': brokers.cloud,
     // 'socket.keepalive.enable': true,
@@ -41,9 +42,14 @@ const kafkaConfigs = {
     // 'api.version.request': true,
   },
 
+  cloud: {
+    'metadata.broker.list': brokers.cloud,
+    'socket.keepalive.enable': true,
+  },
+
   local: {
     'metadata.broker.list': brokers.local,
-    // 'socket.keepalive.enable': true,
+    'socket.keepalive.enable': true,
     // debug: 'generic,broker,security',
   },
 };

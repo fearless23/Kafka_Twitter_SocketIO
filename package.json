@@ -4,9 +4,7 @@
   "description": "",
   "main": "src/main.js",
   "scripts": {
-    "start": "node -r dotenv/config src/server/server.js",
-    "start:consumer": "node -r dotenv/config src/kafka/consumer.js",
-    "start:admin": "node -r dotenv/config src/kafka/admin.js"
+    "start": "node -r dotenv/config src/server.js"
   },
   "author": "Jaspreet Singh",
   "license": "MIT",

@@ -20,25 +20,25 @@ const consumer = new Kafka.KafkaConsumer({
 
 console.log('BROKERS:', c['metadata.broker.list']);
 console.log('CONSUMER CONNECTING');
+
+const topic = "corona"
+
+// Non-flowing mode
 consumer.connect();
 
-consumer.on(EVENTS.ready, (info, metadata) => {
-  console.log(`CONSUMER ${info.name} READY`);
-  // console.log('METADATA');
-  // console.log(metadata);
-  console.log(`TOPIC: ${topic}`);
-  consumer.subscribe([topic]);
-  consumer.consume();
-  // setInterval(() => {
-  // }, 1000);
-});
-
-consumer.on(EVENTS.data, (data) => {
-  console.log(data.value.toString());
-});
+consumer
+  .on('ready', function() {
+    consumer.subscribe([topic]);
+    setInterval(function() {
+      consumer.consume(1);
+    }, 1000);
+  })
+  .on('data', function(data) {
+    console.log(JSON.parse(data.value.toString()));
+  });
 
 consumer.on(EVENTS.connectionFailure, (err) => {
-  console.log('PRODUCER CONNECTION FAILURE:');
+  console.log('CoNSUMER CONNECTION FAILURE:');
   console.log(err);
 });
 

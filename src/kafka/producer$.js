@@ -1,7 +1,6 @@
 const Kafka = require('node-rdkafka');
-const { getKafkaConfig, getKafkaEvents } = require('../configs');
+const { getKafkaConfig } = require('../configs');
 const { conf } = getKafkaConfig();
-const EVENTS = getKafkaEvents('producer');
 
 const c = { ...conf };
 c['group.id'] = 'kafka-producer';
@@ -15,6 +14,7 @@ class KafkaBasicProducer {
     this.dead = false;
     this.flushing = false;
     this.client = new Kafka.Producer(conf, topicConf);
+    this.client.setPollInterval(100);
     this.debug = options.debug === undefined ? false : options.debug;
   }
 

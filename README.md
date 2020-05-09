@@ -1,4 +1,8 @@
-# TWITTER LIVE STREAMING APIWITH KAFKA & SOCKET.IO
+# TWITTER LIVE STREAMING APIWITH KAFKA & SOCKETIO
+
+[![Netlify Status](https://api.netlify.com/api/v1/badges/cd322eff-74ef-440b-8ede-991dcf80d88e/deploy-status)](https://app.netlify.com/sites/kafka-twiiter-socket/deploys)
+
+## [FRONTEND ON NETLIFY](https://kafka-twiiter-socket.netlify.app/)
 
 Project structure
 

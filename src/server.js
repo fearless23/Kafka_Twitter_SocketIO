@@ -4,9 +4,10 @@ const { getUserEvent, USER_EVENTS } = require('./manager');
 const userEvent = getUserEvent();
 const kaftwEvt = getKafkaTwitterEvent();
 
-const server = io.listen(process.env.PORT, {
-  cookie: false,
-});
+// HEROKU WILL LOAD THEIR PORT AUTOMATICALLY in ENV
+const port = process.env.PORT || 3000;
+
+const server = io.listen(port, { cookie: false });
 
 server.sockets.on('connection', (socket) => {
   // console.log(`CONNECTION: ${socket.id}`);
@@ -16,9 +17,8 @@ server.sockets.on('connection', (socket) => {
       console.log(`DISCONNECT: ${socket.id}`);
       const { emptyTag } = userEvent(USER_EVENTS.SOCKET_DISCONNECTED, socket.id);
       if (emptyTag) {
-        // Disconnect Kafka Producer, Kafka Consumer and Stop Twitter Stream
+        console.log('A TAG IS EMPTY NOW', emptyTag);
         await kaftwEvt(STREAM_EVENTS.DELETE, emptyTag);
-        console.log('TAG HAS NO SUBSCRIBERS', emptyTag);
       }
     } catch (error) {
       console.error('DISCONNECTION ERROR: ', error);

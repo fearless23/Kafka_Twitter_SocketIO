@@ -3,9 +3,28 @@ const inputEl = document.getElementById('hashtag');
 const hashtagBtn = document.getElementById('hashtagBtn');
 const msg = document.getElementById('msg');
 const tweets = document.getElementById('tweets');
+hashtagBtn.classList.add('disabled');
 hashtagBtn.addEventListener('click', () => {
-  socket.emit('hashtag', inputEl.value);
+  emitQuery(inputEl.value);
 });
+
+inputEl.addEventListener('keyup', (evt) => {
+  if (inputEl.value.length < 4) {
+    hashtagBtn.classList.add('disabled');
+    return;
+  } else {
+    hashtagBtn.classList.remove('disabled');
+  }
+
+  if (evt.keyCode === 13) {
+    emitQuery(inputEl.value);
+  }
+});
+
+const emitQuery = (hashtag) => {
+  inputEl.value = '';
+  socket.emit('hashtag', hashtag);
+};
 
 const createTweetBody = (tweet) => {
   const xx = document.createElement('div');

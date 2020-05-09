@@ -45,7 +45,7 @@ class TagManager {
 
     if (!this._tagExist(newHashtag)) {
       this._createNewTag(newHashtag);
-      globallyNewTag = true;
+      globallyNewTag = newHashtag;
     }
 
     if (isNewClient) this._addClientIDToTag(newHashtag, newSocket.id);
@@ -54,6 +54,8 @@ class TagManager {
       const remIds = this._deleteClientIDFromTag(oldTag, newSocket.id);
       if (remIds === 0) {
         emptyTag = oldTag;
+        this.hashtags.delete(emptyTag);
+        this.tagMap.delete(emptyTag);
       }
       this._addClientIDToTag(newHashtag, newSocket.id);
     }
@@ -66,7 +68,11 @@ class TagManager {
     const { oldTag } = cm.clientDisconnected(oldSocketID);
     if (!oldTag) return { emptyTag: null };
     const remIds = this._deleteClientIDFromTag(oldTag, oldSocketID);
-    if (remIds === 0) return { emptyTag: oldTag };
+    if (remIds === 0) {
+      this.hashtags.delete(emptyTag);
+      this.tagMap.delete(emptyTag);
+      return { emptyTag: oldTag };
+    }
     return { emptyTag: null };
   }
 
@@ -74,7 +80,6 @@ class TagManager {
   _broadcast(hashtag, event, msg) {
     const tagExists = this.hashtags.has(hashtag);
     if (!tagExists) return { err: true, msg: 'Tag do not exist in Manager' };
-    console.log('BROADCAST FOR ', hashtag);
     const sockets = cm.broadcast(this.tagMap.get(hashtag), event, msg);
     return sockets;
   }

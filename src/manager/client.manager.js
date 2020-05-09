@@ -57,6 +57,7 @@ class ClientManager {
   }
 
   broadcast(idSet, event, msg) {
+    console.log('BROADCASTING TO', idSet.size, 'clients');
     return idSet.forEach((id) => {
       if (this.clients.has(id)) {
         const { socket } = this.clientsMap.get(id);

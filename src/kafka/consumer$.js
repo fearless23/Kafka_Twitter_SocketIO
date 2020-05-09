@@ -2,8 +2,6 @@ const Kafka = require('node-rdkafka');
 const { getKafkaConfig } = require('../configs');
 const { conf } = getKafkaConfig();
 const { Subject } = require('rxjs');
-const c = { ...conf };
-c['group.id'] = 'kafka-producer';
 
 const ErrorCode = Kafka.CODES.ERRORS;
 const DEFAULT_CONSUME_SIZE = 100;
@@ -42,10 +40,13 @@ class KafkaBasicConsumer {
   disconnect() {
     if (this.intId) clearInterval(this.intId);
     this.msgs.complete();
+
     return new Promise((resolve, reject) => {
       return this.consumer.disconnect((err, data) => {
-        if (err) reject(err);
-
+        if (err) {
+          reject(err);
+        }
+        console.log('CONSUMER DISCONNECTED ON DEMAND');
         resolve(data);
       });
     });
@@ -105,6 +106,10 @@ class KafkaBasicConsumer {
     this.consumer.on('data', (data) => {
       this.msgs.next(data.value.toString());
     });
+  }
+
+  getMsgs() {
+    return this.msgs.asObservable();
   }
 }
 
@@ -209,7 +214,9 @@ class KafkaAMOConsumer extends KafkaBasicConsumer {
   }
 }
 
-const createConsumer = async () => {
+const createConsumer = async (topic) => {
+  const c = { ...conf };
+  c['group.id'] = `kafka_${topic}_consumer`;
   const xx = new KafkaBasicConsumer(c);
   await xx.connect();
   return xx;

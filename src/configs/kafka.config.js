@@ -45,12 +45,13 @@ const kafkaConfigs = {
   cloud: {
     'metadata.broker.list': brokers.cloud,
     'socket.keepalive.enable': true,
+    debug: 'generic,broker,security',
   },
 
   local: {
     'metadata.broker.list': brokers.local,
     'socket.keepalive.enable': true,
-    // debug: 'generic,broker,security',
+    debug: 'generic,broker,security',
   },
 };
 

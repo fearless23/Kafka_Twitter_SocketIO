@@ -41,12 +41,13 @@ class TwitterStream {
 
     this.hashtag = hashtag;
 
+    this.isStopped = false;
     this.getData();
   }
 
   getData() {
     this.stream.on('tweet', (tweet) => {
-      this.newTweet.next(extractTweetData(tweet));
+      if (!this.isStopped) this.newTweet.next(extractTweetData(tweet));
     });
   }
 
@@ -55,8 +56,9 @@ class TwitterStream {
   }
 
   stop() {
-    console.log('CLEARING FOR', this.hashtag);
+    this.isStopped = true;
     this.newTweet.complete();
+    console.log('TWITTER DISCONNECTED ON DEMAND');
     this.stream.stop();
   }
 }

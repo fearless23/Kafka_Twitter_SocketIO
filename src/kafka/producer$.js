@@ -2,9 +2,6 @@ const Kafka = require('node-rdkafka');
 const { getKafkaConfig } = require('../configs');
 const { conf } = getKafkaConfig();
 
-const c = { ...conf };
-c['group.id'] = 'kafka-producer';
-
 const ErrorCode = Kafka.CODES.ERRORS;
 const FLUSH_TIMEOUT = 10000; // ms
 
@@ -21,7 +18,10 @@ class KafkaBasicProducer {
   disconnect() {
     return new Promise((resolve, reject) => {
       return this.client.disconnect((err, data) => {
-        if (err) reject(err);
+        if (err) {
+          reject(err);
+        }
+        console.log('PRODUCER DISCONNECTED ON DEMAND');
         resolve(data);
       });
     });
@@ -68,8 +68,9 @@ class KafkaBasicProducer {
       try {
         // synchronously
         this.client.produce(topic, partition, Buffer.from(message), key, timestamp);
-        resolve('MSG SEND TO KAFKA');
+        resolve();
       } catch (err) {
+        console.error('PRODUCER PRODUCE ERROR INNER', err);
         if (err.code === ErrorCode.ERR__QUEUE_FULL) {
           // flush all queued messages
           return this.flush(FLUSH_TIMEOUT).then(() => {
@@ -82,7 +83,9 @@ class KafkaBasicProducer {
   }
 }
 
-const createProducer = async () => {
+const createProducer = async (topic) => {
+  const c = { ...conf };
+  c['client.id'] = `kafka_${topic}_producer`;
   const xx = new KafkaBasicProducer(c);
   await xx.connect();
   return xx;

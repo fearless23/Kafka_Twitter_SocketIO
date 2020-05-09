@@ -53,14 +53,12 @@ body {
   opacity: 1;
 }
 
-
-
 .tweets {
   display: flex;
   flex-direction: column;
- }
- 
- .tweet {
+}
+
+.tweet {
   align-self: center;
   width: 400px;
   border: 1px solid rgba(0, 0, 0, 0.3);
@@ -68,73 +66,80 @@ body {
   padding: 1rem;
   margin-bottom: 1rem;
   background: white;
- }
- 
- .tweet .top {
+}
+
+.tweet .top {
   display: flex;
   align-items: center;
   justify-content: space-between;
- }
- 
- .top-left {
+}
+
+.top-left {
   display: flex;
   align-items: center;
- }
- 
- .top-left img {
+}
+
+.top-left img {
   border-radius: 1000px;
- }
- 
- .names {
+}
+
+.names {
   margin-left: 1rem;
- }
- 
- .name {
+}
+
+.name {
   font-weight: bold;
- }
- 
- .username {
+}
+
+.username {
   color: rgba(0, 0, 0, 0.85);
- }
- 
- .date,
- .time {
+}
+
+.date,
+.time {
   text-align: right;
   line-height: 1.42;
- }
- 
- .time {
+}
+
+.time {
   font-size: 0.9rem;
   color: rgba(0, 0, 0, 0.6);
- }
- 
- .content {
+}
+
+.content {
   padding: 1rem 0;
- }
- 
- .footer {
+}
+
+.footer {
   display: flex;
   align-items: center;
- }
+}
 
- .retweets, .favorites {
-   display: flex;
-   align-items: center;
- }
+.retweets,
+.favorites {
+  display: flex;
+  align-items: center;
+}
 
- .retweets .fa-retweet {
-   color: #2a98ef;
-   font-size: 1.3em;
-   margin-right: 4px;
- }
+.retweets .fa-retweet {
+  color: #2a98ef;
+  font-size: 1.3em;
+  margin-right: 4px;
+}
 
- .favorites {
-   margin-left: 1.3rem;
- }
+.favorites {
+  margin-left: 1.3rem;
+}
 
- .favorites .fa-heart {
+.favorites .fa-heart {
   color: hotpink;
   font-size: 1.3em;
   margin-right: 4px;
 }
- 
+
+button.disabled {
+  pointer-events: none;
+  opacity: 0.8;
+  background: #60a3da;
+  cursor: not-allowed;
+}

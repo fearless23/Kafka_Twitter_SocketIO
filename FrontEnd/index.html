@@ -4,10 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Socket io client</title>
-    <script
-      
-      src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"
-    ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
     <link
       href="https://fonts.googleapis.com/css2?family=Nunito+Sans&display=swap"
       rel="stylesheet"
@@ -17,15 +14,13 @@
   </head>
   <body>
     <div class="searchBar">
-      <input type="text" id="hashtag" />
+      <input type="text" id="hashtag" placeholder="Type hashtag or a search term and press Enter" />
       <button id="hashtagBtn">Send</button>
     </div>
     <div id="msg"></div>
     <div>
       <h1>Tweets</h1>
-      <section class="tweets" id="tweets">
-     
-      </section>
+      <section class="tweets" id="tweets"></section>
     </div>
     <script src="./app.js"></script>
     <script src="./createTweetBody.js"></script>

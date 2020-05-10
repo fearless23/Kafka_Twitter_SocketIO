@@ -1,11 +1,10 @@
 const urls = {
   local: 'http://localhost:3000',
-  cloud: 'https://kafka-twitter-socket.herokuapp.com/',
-  cloud2: 'http://139.59.74.127:3000',
+  cloud: 'https://kafka-twitter-socket.herokuapp.com/'
 };
 
 // const url = urls.local;
-const url = urls.cloud2;
+const url = urls.cloud;
 
 const socket = io(url);
 

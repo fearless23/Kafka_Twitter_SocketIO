@@ -30,17 +30,16 @@ const securityProtocols = ['plaintext', 'ssl', 'sasl_plaintext', 'sasl_ssl'];
 const mechanisms = ['GSSAPI', 'PLAIN', 'SCRAM-SHA-256'];
 
 const kafkaConfigs = {
-  cloud_old: {
-    // 'group.id': 'cloudkarafka-cloud',
-    'metadata.broker.list': brokers.cloud,
-    // 'socket.keepalive.enable': true,
-    // 'security.protocol': securityProtocols[0],
-    // 'sasl.mechanisms': mechanisms[1],
-    'sasl.username': process.env.CLOUDKARAFKA_USERNAME,
-    'sasl.password': process.env.CLOUDKARAFKA_PASSWORD,
-    debug: 'generic,broker,security',
-    // 'api.version.request': true,
-  },
+  // cloud_old: {
+  //   'metadata.broker.list': brokers.cloud,
+  //   'socket.keepalive.enable': true,
+  //   'security.protocol': securityProtocols[0],
+  //   'sasl.mechanisms': mechanisms[1],
+  //   'sasl.username': process.env.CLOUDKARAFKA_USERNAME,
+  //   'sasl.password': process.env.CLOUDKARAFKA_PASSWORD,
+  //   debug: 'generic,broker,security',
+  //   'api.version.request': true,
+  // },
 
   cloud: {
     'metadata.broker.list': brokers.cloud,
@@ -56,7 +55,8 @@ const kafkaConfigs = {
 };
 
 const topicsPrefixes = {
-  cloud: process.env.CLOUDKARAFKA_TOPIC_PREFIX,
+  // cloud: process.env.CLOUDKARAFKA_TOPIC_PREFIX,
+  cloud: '', // DIGITAL OCEAN
   local: '',
 };
 

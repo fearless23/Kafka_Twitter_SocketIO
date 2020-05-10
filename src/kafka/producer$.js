@@ -18,10 +18,7 @@ class KafkaBasicProducer {
   disconnect() {
     return new Promise((resolve, reject) => {
       return this.client.disconnect((err, data) => {
-        if (err) {
-          reject(err);
-        }
-        console.log('PRODUCER DISCONNECTED ON DEMAND');
+        if (err) reject(err);
         resolve(data);
       });
     });
@@ -43,16 +40,25 @@ class KafkaBasicProducer {
   connect(metadataOptions = {}) {
     return new Promise((resolve, reject) => {
       this.client.connect(metadataOptions, (err, data) => {
-        if (err) reject(err);
+        if (err) {
+          console.error(`PCE:6002 => Error connecting producer =>\n${err}`);
+          reject('PCE:6002');
+        }
         resolve(data);
       });
     });
   }
 
   async die() {
-    this.dying = true;
-    await this.disconnect();
-    this.dead = true;
+    try {
+      this.dying = true;
+      await this.disconnect();
+      this.dead = true;
+      console.log('PRODUCER DISCONNECTED ON DEMAND');
+    } catch (error) {
+      console.error(`PDE:6001 => Error disconnecting producer =>\n${error}`);
+      throw new Error('PDE:6001');
+    }
   }
 
   async gracefulDead() {
@@ -61,25 +67,22 @@ class KafkaBasicProducer {
   }
 
   async sendMsg(topic, message, partition = null, key = 'StormyWind', timestamp = Date.now()) {
-    return new Promise((resolve, reject) => {
-      if (this.dying || this.dead) {
-        reject(new ConnectionDeadError('Connection has been dead or is dying'));
+    if (this.dying || this.dead) {
+      console.error('PME:6003 ==> Connection has been dead or is dying');
+      throw new Error('PME:6003');
+    }
+    try {
+      // synchronously
+      this.client.produce(topic, partition, Buffer.from(message), key, timestamp);
+      return;
+    } catch (err) {
+      console.error('PRODUCER PRODUCE ERROR INNER', err);
+      if (err.code === ErrorCode.ERR__QUEUE_FULL) {
+        await this.flush(FLUSH_TIMEOUT);
       }
-      try {
-        // synchronously
-        this.client.produce(topic, partition, Buffer.from(message), key, timestamp);
-        resolve();
-      } catch (err) {
-        console.error('PRODUCER PRODUCE ERROR INNER', err);
-        if (err.code === ErrorCode.ERR__QUEUE_FULL) {
-          // flush all queued messages
-          return this.flush(FLUSH_TIMEOUT).then(() => {
-            resolve();
-          });
-        }
-        reject(err);
-      }
-    });
+
+      throw new Error(err);
+    }
   }
 }
 

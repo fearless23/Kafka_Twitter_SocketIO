@@ -1,16 +1,16 @@
 const urls = {
   local: 'http://localhost:3000',
-  cloud: 'https://kafka-twitter-socket.herokuapp.com/'
+  cloud: 'https://kafka-twitter-socket.herokuapp.com/',
 };
 
-// const url = urls.local;
-const url = urls.cloud;
+const url = urls.local;
+// const url = urls.cloud;
 
 const socket = io(url);
 
 const inputEl = document.getElementById('hashtag');
 const hashtagBtn = document.getElementById('hashtagBtn');
-const msg = document.getElementById('msg');
+const msgEl = document.getElementById('msg');
 const tweets = document.getElementById('tweets');
 hashtagBtn.classList.add('disabled');
 hashtagBtn.addEventListener('click', () => {
@@ -47,14 +47,15 @@ socket.on('tweet', (message) => {
   if (!err) {
     const newTweetEl = createTweetBody(tweet);
     tweets.insertBefore(newTweetEl, tweets.firstChild);
+    // console.log(tweet);
   }
 });
 
-socket.on('hashtag', (message) => {
-  const { err, hashtag } = message;
+socket.on('hashtag', (data) => {
+  const { err, hashtag, msg } = data;
   if (!err) {
-    msg.innerText = `Query received for #${hashtag}`;
+    msgEl.innerText = `Query received for #${hashtag}`;
   } else {
-    msg.innerText = `Query error for #${hashtag}`;
+    msgEl.innerText = `Query error for #${hashtag} \n ${msg}`;
   }
 });

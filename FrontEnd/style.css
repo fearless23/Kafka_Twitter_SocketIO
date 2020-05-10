@@ -13,7 +13,7 @@ html {
 }
 
 body {
-  min-height: 100vh;
+  height: 100vh;
   background-image: linear-gradient(120deg, #f6d365 0%, #fda085 100%);
 }
 
@@ -53,9 +53,26 @@ body {
   opacity: 1;
 }
 
+.container {
+  padding: 0 1.5rem 1.5rem;
+}
+
+.heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.heading #msg {
+  color: rgba(0, 0, 0, 0.75);
+}
+
 .tweets {
   display: flex;
   flex-direction: column;
+  height: 76vh;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .tweet {

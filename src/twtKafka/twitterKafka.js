@@ -1,25 +1,37 @@
 const { createStream } = require('./Twitter_Stream');
 const { createProducer } = require('../kafka/producer$');
 const { createConsumer } = require('../kafka/consumer$');
-const { USER_EVENTS } = require('../manager/hashtag.manager');
+const { broadcast } = require('./../socketio/socket.helpers');
+
 const STREAM_EVENTS = {
   DELETE: 'DELETE',
   CREATE: 'CREATE',
-  BROADCAST: 'CREATE',
+};
+
+const isStrTrue = (n) => {
+  if (!n) return false;
+  return n.toString().toUpperCase() === 'TRUE';
+};
+
+const SHOW_LOGS = {
+  PRODUCER: isStrTrue(process.env.SHOW_PRODUCER_LOGS),
+  CONSUMER: isStrTrue(process.env.SHOW_CONSUMER_LOGS),
 };
 
 const addToKafka = (tStream, producer, hashtag) => {
   tStream.getTweet().subscribe((tweet) => {
+    if (SHOW_LOGS.PRODUCER) console.log(`New Tweet: #${hashtag} added to KAFKA`);
     producer.sendMsg(hashtag, JSON.stringify(tweet), null, `#${hashtag}`).catch((error) => {
       console.error('addToKafka', error);
     });
   });
 };
 
-const takeFromKafka = (consumer, brodcast) => {
+const takeFromKafka = (consumer, roomBroadcast, hashtag) => {
   consumer.startFetching(1);
   consumer.getMsgs().subscribe((msg) => {
-    brodcast({ err: false, tweet: JSON.parse(msg) });
+    if (SHOW_LOGS.CONSUMER) console.log(`BROADCASTING FOR #${hashtag}`);
+    roomBroadcast(msg);
   });
 };
 
@@ -34,56 +46,62 @@ class KafkaTwitter {
   async _createStreams(hashtag) {
     try {
       const tStream = createStream(hashtag);
-      const consumer = await createConsumer(hashtag);
       const producer = await createProducer(hashtag);
+      const consumer = await createConsumer(hashtag);
       this.streams.set(hashtag, tStream);
-      this.consumers.set(hashtag, consumer);
       this.producers.set(hashtag, producer);
+      this.consumers.set(hashtag, consumer);
       return { tStream, producer, consumer };
     } catch (error) {
+      this._deleteStreams(hashtag);
       console.error('ERROR CREATING STREAMS FOR:', hashtag, error);
       throw new Error(`ERROR CREATING STREAMS FOR ${hashtag}`);
     }
   }
 
-  async _createNewProducer(hashtag, userEvent) {
+  async _createNewProducer(hashtag) {
     const { tStream, producer, consumer } = await this._createStreams(hashtag);
-    console.log('STREAM STARTING ==>', hashtag);
+
+    console.log(`--- STREAM STARTED: ==> ${hashtag} ---`);
     addToKafka(tStream, producer, hashtag);
+
     await consumer.subscribe([hashtag]);
-    const brodcast = (msg) => userEvent(USER_EVENTS.BROADCAST, hashtag, 'tweet', msg);
-    takeFromKafka(consumer, brodcast);
+    const roomBroadcast = (msg) =>
+      broadcast(hashtag, 'tweet', { err: false, tweet: JSON.parse(msg) });
+    takeFromKafka(consumer, roomBroadcast, hashtag);
   }
 
   _getStreams(hashtag) {
     const producer = this.producers.get(hashtag);
     const consumer = this.consumers.get(hashtag);
     const tStream = this.streams.get(hashtag);
-    return { tStream, producer, consumer };
+    return {
+      tStream,
+      producer,
+      consumer,
+    };
   }
 
   _deleteStreams(hashtag) {
+    this.streams.delete(hashtag);
     this.producers.delete(hashtag);
     this.consumers.delete(hashtag);
-    this.streams.delete(hashtag);
   }
 
   async _stopProducer(hashtag) {
     const { tStream, producer, consumer } = this._getStreams(hashtag);
-
     await consumer.die();
     tStream.stop();
     await producer.die();
-
     this._deleteStreams(hashtag);
   }
 
-  async newHashTag(hashtag, userEvent) {
+  async newHashTag(hashtag) {
     try {
       const tagExists = this.hashTags.has(hashtag);
       if (!tagExists) {
         this.hashTags.add(hashtag);
-        await this._createNewProducer(hashtag, userEvent);
+        await this._createNewProducer(hashtag);
       }
     } catch (error) {
       console.error('ERROR CREATING STREAMS', error);
@@ -103,13 +121,6 @@ class KafkaTwitter {
     }
   }
 
-  // NEW CLIENT OLD HASHTAG
-  async broadcast(hashtag, userEvent) {
-    await consumer.subscribe([hashtag]);
-    const brodcast = (msg) => userEvent(USER_EVENTS.BROADCAST, hashtag, 'tweet', msg);
-    takeFromKafka(consumer, brodcast);
-  }
-
   event(eventName, ...args) {
     switch (eventName) {
       case STREAM_EVENTS.CREATE:
@@ -117,9 +128,6 @@ class KafkaTwitter {
 
       case STREAM_EVENTS.DELETE:
         return this.stopHashTag(...args);
-
-      case STREAM_EVENTS.BROADCAST:
-        return this.brodcast(...args);
 
       default:
         throw new Error('WRONG STREAM_EVENT');

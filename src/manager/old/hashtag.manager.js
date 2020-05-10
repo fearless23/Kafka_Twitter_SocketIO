@@ -66,22 +66,23 @@ class TagManager {
   // 2: EVENT = CLIENT_EVENTS.SOCKET_DISCONNECTED
   _clientDisconnected(oldSocketID) {
     const { oldTag } = cm.clientDisconnected(oldSocketID);
-    if (!oldTag) return { emptyTag: null };
+    if (!oldTag) return { emptyTag: null, oldTag };
     const remIds = this._deleteClientIDFromTag(oldTag, oldSocketID);
     if (remIds === 0) {
-      this.hashtags.delete(emptyTag);
-      this.tagMap.delete(emptyTag);
-      return { emptyTag: oldTag };
+      this.hashtags.delete(oldTag);
+      this.tagMap.delete(oldTag);
+      return { emptyTag: oldTag, oldTag };
     }
-    return { emptyTag: null };
+    return { emptyTag: null, oldTag };
   }
 
   // BROADCAST
   _broadcast(hashtag, event, msg) {
     const tagExists = this.hashtags.has(hashtag);
     if (!tagExists) return { err: true, msg: 'Tag do not exist in Manager' };
-    const sockets = cm.broadcast(this.tagMap.get(hashtag), event, msg);
-    return sockets;
+    global.socketRoomSend(roomName).emit(event, msg);
+    const myRoom = global.socketRooms[roomName];
+    console.log('BROADCASTING TO', myRoom.size, 'clients');
   }
 
   event(eventType, ...args) {

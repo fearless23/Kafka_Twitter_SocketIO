@@ -7,12 +7,14 @@ const ErrorCode = Kafka.CODES.ERRORS;
 const DEFAULT_CONSUME_SIZE = 100;
 const DEFAULT_CONCURRENT = 100;
 const DEFAULT_AUTO_COMMIT_INTERVAL = 1000; // ms
+const DEFAULT_OFFSET_RESET = 'earliest';
 
 class KafkaBasicConsumer {
   constructor(conf, topicConf = {}, options = {}) {
     this.dying = false;
     this.dead = false;
     this.topics = [];
+    conf['auto.offset.reset'] = conf['auto.offset.reset'] || DEFAULT_OFFSET_RESET;
     conf['auto.commit.interval.ms'] =
       conf['auto.commit.interval.ms'] || DEFAULT_AUTO_COMMIT_INTERVAL;
 
@@ -35,6 +37,7 @@ class KafkaBasicConsumer {
 
     this.intId = null;
     this.msgs = new Subject();
+    this.name = 'HELLO';
   }
 
   disconnect() {
@@ -43,10 +46,7 @@ class KafkaBasicConsumer {
 
     return new Promise((resolve, reject) => {
       return this.consumer.disconnect((err, data) => {
-        if (err) {
-          reject(err);
-        }
-        console.log('CONSUMER DISCONNECTED ON DEMAND');
+        if (err) reject(err);
         resolve(data);
       });
     });
@@ -55,21 +55,28 @@ class KafkaBasicConsumer {
   async connect(metadataOptions = {}) {
     return new Promise((resolve, reject) => {
       this.consumer.connect(metadataOptions, (err, data) => {
-        if (err) reject(err);
+        if (err) {
+          console.error(`CCE:5002 => Error connecting consumer =>\n${err}`);
+          reject('CCE:5002');
+        }
         resolve(data);
       });
     });
   }
 
   async die() {
-    this.dying = true;
-
-    // empty topics and unsubscribe them
-    this.unsubscribe();
-    // disconnect from brokers
-    await this.disconnect();
-
-    this.dead = true;
+    try {
+      this.dying = true;
+      // empty topics and unsubscribe them
+      this.unsubscribe();
+      // disconnect from brokers
+      await this.disconnect();
+      this.dead = true;
+      console.log('CONSUMER DISCONNECTED ON DEMAND:OK');
+    } catch (error) {
+      console.error(`CDE:5001 => Error disconnecting consumer =>\n${error}`);
+      throw new Error('CDE:5001');
+    }
   }
 
   async subscribe(topics) {
@@ -101,9 +108,15 @@ class KafkaBasicConsumer {
 
   startFetching(size = 1) {
     this.intId = setInterval(() => {
-      this.consumer.consume(size);
+      this.consumer.consume(2);
+      // , (err, data) => {
+      //   if (err) console.error('CONSUME ERROR:', err);
+      //   if (data) console.log('CONSUME DATA', data.length);
+      //   if (data) this.msgs.next(JSON.stringify({ dummyTweet: 'YES' }));
+      // });
     }, 1000);
     this.consumer.on('data', (data) => {
+      // console.log('DATA', data);
       this.msgs.next(data.value.toString());
     });
   }
@@ -216,7 +229,8 @@ class KafkaAMOConsumer extends KafkaBasicConsumer {
 
 const createConsumer = async (topic) => {
   const c = { ...conf };
-  c['group.id'] = `kafka_${topic}_consumer`;
+  c['client.id'] = `kafka_${topic}_consumer`;
+  c['group.id'] = `kafka_twitter_consumer`;
   const xx = new KafkaBasicConsumer(c);
   await xx.connect();
   return xx;

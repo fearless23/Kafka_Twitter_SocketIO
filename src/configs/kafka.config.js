@@ -19,11 +19,14 @@ const consumerEvents = {
   offsetCommit: 'offset.commit',
   ...clientEvents,
 };
+const cloudKafkaBrokers = process.env.CLOUDKARAFKA_BROKERS || ""
+const cloudBrokers = process.env.CLOUD_BROKERS || '';
+const localBrokers = process.env.CLOUD_BROKERS || '';
 
 const brokers = {
-  // cloud: process.env.CLOUDKARAFKA_BROKERS.split(','),
-  cloud: process.env.CLOUD_BROKERS.split(','),
-  local: process.env.LOCAL_BROKERS.split(','),
+  // cloud: cloudKafkaBrokers.split(','),
+  cloud: cloudBrokers.split(','),
+  local: localBrokers.split(','),
 };
 
 const securityProtocols = ['plaintext', 'ssl', 'sasl_plaintext', 'sasl_ssl'];

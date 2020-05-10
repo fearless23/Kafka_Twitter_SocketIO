@@ -3,8 +3,8 @@ const urls = {
   cloud: 'https://kafka-twitter-socket.herokuapp.com/',
 };
 
-const url = urls.local;
-// const url = urls.cloud;
+// const url = urls.local;
+const url = urls.cloud;
 
 const socket = io(url);
 

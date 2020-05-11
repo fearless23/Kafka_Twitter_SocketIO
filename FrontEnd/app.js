@@ -8,10 +8,13 @@ const url = urls.cloud;
 
 const socket = io(url);
 
+let currHashtag = null;
+let tweets = 0;
+
 const inputEl = document.getElementById('hashtag');
 const hashtagBtn = document.getElementById('hashtagBtn');
 const msgEl = document.getElementById('msg');
-const tweets = document.getElementById('tweets');
+const tweetsContainer = document.getElementById('tweets');
 hashtagBtn.classList.add('disabled');
 hashtagBtn.addEventListener('click', () => {
   emitQuery(inputEl.value);
@@ -32,6 +35,8 @@ inputEl.addEventListener('keyup', (evt) => {
 
 const emitQuery = (hashtag) => {
   inputEl.value = '';
+  currHashtag = hashtag;
+  tweets = 0;
   socket.emit('hashtag', hashtag);
 };
 
@@ -45,8 +50,10 @@ const createTweetBody = (tweet) => {
 socket.on('tweet', (message) => {
   const { err, tweet } = message;
   if (!err) {
+    tweets++;
+    msgEl.innerText = `#${currHashtag} - ${tweets} tweets`;
     const newTweetEl = createTweetBody(tweet);
-    tweets.insertBefore(newTweetEl, tweets.firstChild);
+    tweetsContainer.insertBefore(newTweetEl, tweetsContainer.firstChild);
     // console.log(tweet);
   }
 });

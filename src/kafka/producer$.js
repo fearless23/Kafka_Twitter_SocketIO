@@ -13,6 +13,7 @@ class KafkaBasicProducer {
     this.client = new Kafka.Producer(conf, topicConf);
     this.client.setPollInterval(100);
     this.debug = options.debug === undefined ? false : options.debug;
+    this.size = 0;
   }
 
   disconnect() {
@@ -74,6 +75,7 @@ class KafkaBasicProducer {
     try {
       // synchronously
       this.client.produce(topic, partition, Buffer.from(message), key, timestamp);
+      this.size++;
       return;
     } catch (err) {
       console.error('PRODUCER PRODUCE ERROR INNER', err);

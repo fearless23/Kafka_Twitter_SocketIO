@@ -18,20 +18,20 @@ class KafkaBasicConsumer {
     conf['auto.commit.interval.ms'] =
       conf['auto.commit.interval.ms'] || DEFAULT_AUTO_COMMIT_INTERVAL;
 
-    if (!conf['rebalance_cb']) {
-      conf['rebalance_cb'] = (err, assignment) => {
-        if (err.code === ErrorCode.ERR__ASSIGN_PARTITIONS) {
-          this.consumer.assign(assignment);
-          let rebalanceLog = 'consumer rebalance : ';
-          for (const assign of assignment) {
-            rebalanceLog += `{topic ${assign.topic}, partition: ${assign.partition}} `;
-          }
-        }
-        if (err.code === ErrorCode.ERR__REVOKE_PARTITIONS) {
-          this.consumer.unassign();
-        }
-      };
-    }
+    // if (!conf['rebalance_cb']) {
+    //   conf['rebalance_cb'] = (err, assignment) => {
+    //     if (err.code === ErrorCode.ERR__ASSIGN_PARTITIONS) {
+    //       this.consumer.assign(assignment);
+    //       let rebalanceLog = 'consumer rebalance : ';
+    //       for (const assign of assignment) {
+    //         rebalanceLog += `{topic ${assign.topic}, partition: ${assign.partition}} `;
+    //       }
+    //     }
+    //     if (err.code === ErrorCode.ERR__REVOKE_PARTITIONS) {
+    //       this.consumer.unassign();
+    //     }
+    //   };
+    // }
 
     this.consumer = new Kafka.KafkaConsumer(conf, topicConf);
 
@@ -114,7 +114,7 @@ class KafkaBasicConsumer {
       //   if (data) console.log('CONSUME DATA', data.length);
       //   if (data) this.msgs.next(JSON.stringify({ dummyTweet: 'YES' }));
       // });
-    }, 1000);
+    }, 1100);
     this.consumer.on('data', (data) => {
       // console.log('DATA', data);
       this.msgs.next(data.value.toString());
@@ -229,8 +229,8 @@ class KafkaAMOConsumer extends KafkaBasicConsumer {
 
 const createConsumer = async (topic) => {
   const c = { ...conf };
-  c['client.id'] = `kafka_${topic}_consumer`;
-  c['group.id'] = `kafka_twitter_consumer`;
+  // c['client.id'] = `kafka_${topic}_consumer`;
+  c['group.id'] = `kafka_${topic}_consumer_group`;
   const xx = new KafkaBasicConsumer(c);
   await xx.connect();
   return xx;

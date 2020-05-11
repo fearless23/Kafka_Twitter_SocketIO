@@ -21,7 +21,7 @@ const consumerEvents = {
 };
 const cloudKafkaBrokers = process.env.CLOUDKARAFKA_BROKERS || ""
 const cloudBrokers = process.env.CLOUD_BROKERS || '';
-const localBrokers = process.env.CLOUD_BROKERS || '';
+const localBrokers = process.env.LOCAL_BROKERS || '';
 
 const brokers = {
   // cloud: cloudKafkaBrokers.split(','),

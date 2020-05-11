@@ -33,6 +33,7 @@ const extractTweetData = (tweet) => {
 
 class TwitterStream {
   newTweet = new Subject();
+  size = 0;
   constructor(hashtag) {
     this.stream = Twitter.stream('statuses/filter', {
       track: '#' + hashtag,
@@ -40,14 +41,16 @@ class TwitterStream {
     });
 
     this.hashtag = hashtag;
-
     this.isStopped = false;
     this.getData();
   }
 
   getData() {
     this.stream.on('tweet', (tweet) => {
-      if (!this.isStopped) this.newTweet.next(extractTweetData(tweet));
+      if (!this.isStopped) {
+        this.size++;
+        this.newTweet.next(extractTweetData(tweet));
+      }
     });
   }
 
